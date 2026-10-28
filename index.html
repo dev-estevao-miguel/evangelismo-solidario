@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evangelismo Solidário - Igreja Demo</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a33;
+      --card:#1a2447;
+      --muted:#10182f;
+      --text:#e7ecff;
+      --sub:#b7c2ff;
+      --brand:#5ea8ff;
+      --accent:#7df0c4;
+      --danger:#ff6b6b;
+      --border:#263055;
+      --hint:#9fb0ff7a;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+
+    /* Fundo estilizado: camadas mágicas e blobs animados por trás do conteúdo */
+    html, body { height: 100%; }
+    body{ position:relative;overflow-x:hidden; }
+
+    /* Camada de background principal — um gradiente suave em ângulo */
+    body::before{
+      content:'';
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-color:var(--bg);
+      background-image: 
+        linear-gradient(180deg, rgba(11,16,32,0.85), rgba(8,12,24,0.9)),
+        url('img/fundo-demo.png'); /* garanta que o arquivo existe em /img */
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      mix-blend-mode: normal;
+      opacity:1;
+    }
+
+    /* Blobs animados para dar vida ao fundo */
+    body::after{
+      content:'';
+      position:fixed;left:-10%;top:-10%;width:120%;height:120%;z-index:0;pointer-events:none;filter:blur(40px);
+      background: radial-gradient(20% 20% at 15% 20%, rgba(125,240,196,0.14), transparent 20%),
+                  radial-gradient(25% 25% at 80% 70%, rgba(94,168,255,0.12), transparent 20%),
+                  radial-gradient(15% 15% at 60% 30%, rgba(125,240,196,0.06), transparent 20%);
+      animation: floatBg 18s ease-in-out infinite;
+      opacity:0.95;
+    }
+
+    @keyframes floatBg{
+      0%{transform:translateY(0) rotate(0deg) scale(1)}
+      50%{transform:translateY(18px) rotate(3deg) scale(1.02)}
+      100%{transform:translateY(0) rotate(0deg) scale(1)}
+    }
+
+    /* Garantir que o topo e o conteúdo fiquem acima das camadas de fundo */
+    .topbar, main, .footer{position:relative;z-index:1}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit}
+
+    .topbar{
+      position:sticky;top:0;z-index:10;
+      background:linear-gradient(180deg,#0b1020,rgba(11,16,32,.6));
+      border-bottom:1px solid var(--border);
+      -webkit-backdrop-filter:saturate(1.2) blur(6px);
+      backdrop-filter:saturate(1.2) blur(6px);
+    }
+    .brand{display:flex;gap:16px;align-items:center;padding:16px 20px}
+    .brand-mark{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:56px;height:56px;flex:0 0 56px;
+      font-weight:700;letter-spacing:.06em;font-size:.75rem;line-height:1;
+      color:var(--hint);border:1px solid var(--border);padding:6px;border-radius:10px;text-align:center;
+      background:rgba(255,255,255,0.02);
+    }
+
+    .brand-mark img{
+      max-width:100%;
+      max-height:100%;
+      display:block;
+      object-fit:contain;
+      border-radius:8px;
+    }
+    .brand-text h1{margin:0;font-size:1.2rem}
+    .subtitle{margin:2px 0;color:var(--sub);font-size:.95rem}
+    .leaders{margin:0;color:#9fb0ffbd;font-size:.85rem}
+
+    .nav{display:flex;gap:8px;padding:0 12px 12px 12px;flex-wrap:wrap}
+    .nav-link{
+      background:transparent;color:var(--text);border:1px solid var(--border);
+      padding:8px 12px;border-radius:10px;cursor:pointer;transition:.2s
+    }
+    .nav-link:hover{border-color:var(--brand);color:var(--brand)}
+    .nav-link.active{background:var(--card);border-color:var(--brand);color:#fff}
+
+    main{max-width:1100px;margin:24px auto;padding:0 16px}
+    .view{display:none;animation:fade .25s ease}
+    .view.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    .hero{
+      background: linear-gradient(180deg, rgba(18,26,51,0.28), rgba(18,26,51,0.14));
+      border:1px solid rgba(255,255,255,0.04);
+      border-radius:8px;padding:24px;-webkit-backdrop-filter: blur(4px);backdrop-filter: blur(4px);
+    }
+    .hero-badge{
+      display:inline-block;background:rgba(125,240,196,.1);
+      color:var(--accent);border:1px solid rgba(125,240,196,.4);
+      padding:6px 10px;border-radius:999px;font-weight:600;font-size:.9rem
+    }
+    .hero-title{margin:10px 0 6px;font-size:1.6rem}
+    .hero-when{margin:0 0 16px;color:var(--sub)}
+    .hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+
+    .btn{
+      background:var(--panel);color:var(--text);border:1px solid var(--border);
+      padding:10px 14px;border-radius:10px;cursor:pointer;transition:.2s;display:inline-flex;gap:8px;align-items:center
+    }
+    .btn:hover{border-color:var(--brand);color:var(--brand)}
+    .btn.primary{background:linear-gradient(180deg,#4378ff,#3157d6);border-color:#3a63e3}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .btn.outline{background:transparent}
+    .btn.danger{background:linear-gradient(180deg,#ff6464,#cc5252);border-color:#ff7c7c}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    .hidden{display:none !important}
+
+    #btnLogout{margin-left:8px}
+
+    #adminSelector{
+      margin-left:8px;
+      padding:8px;border-radius:8px;background:var(--panel);color:var(--text);border:1px solid var(--border)
+    }
+
+    .admin-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px
+    }
+    .card{
+      background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px
+    }
+    .card h3{margin:0 0 6px}
+    .card p{margin:0;color:var(--sub)}
+    .card-link .card{transition:.2s}
+    .card-link .card:hover{transform:translateY(-2px);border-color:var(--brand)}
+    .card.muted{opacity:.6}
+
+    .form{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+    .form-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .form-field{display:flex;flex-direction:column;gap:6px}
+    .form-field.full{grid-column:1/-1}
+    .form-field.invalid input, .form-field.invalid textarea { outline:2px solid rgba(255,107,107,0.15); box-shadow:0 0 0 3px rgba(255,107,107,0.04); }
+    .form-error{color:var(--danger);font-size:.95rem;margin-top:8px;display:none}
+    .form-error.active{display:block}
+    .id-preview{display:flex;gap:12px;align-items:center;margin-top:10px}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:50}
+    .modal[aria-hidden="false"]{display:flex}
+    .modal-backdrop{position:absolute;inset:0;background:rgba(2,6,23,0.6)}
+    .modal-content{position:relative;z-index:51;background:var(--panel);border:1px solid var(--border);padding:18px;border-radius:12px;max-width:420px;width:100%;color:var(--text)}
+    .modal-content h3{margin:0 0 8px}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .form-field label{font-size:.9rem;color:var(--sub)}
+    .form-field input{
+      background:var(--card);color:var(--text);border:1px solid var(--border);
+      border-radius:10px;padding:10px
+    }
+    .form-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+
+    .toolbar{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;margin:12px 0
+    }
+    .search input{
+      width:260px;max-width:100%;
+      background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text)
+    }
+
+    .table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:8px}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{border-bottom:1px solid var(--border);padding:10px 8px;text-align:left}
+    .table th{color:var(--sub);font-weight:600}
+    .table tr:hover td{background:#121a33}
+    .table tr td:nth-child(6) { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .hint{color:var(--hint);margin:10px 6px 0}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .activity-card{
+      background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;transition:.2s;
+      cursor: pointer;
+    }
+    .activity-card:hover{transform:translateY(-2px);border-color:var(--brand)}
+    .activity-card:active { transform: scale(0.98); }
+    .tag{
+      display:inline-block;padding:4px 8px;border-radius:999px;
+      background:#23315b;color:#9fc2ff;border:1px solid #34518f;font-weight:600;font-size:.8rem
+    }
+    .activity-count{
+      margin-top:10px;display:inline-block;background:var(--brand);color:#04243a;padding:6px 10px;border-radius:999px;font-weight:700;font-size:.95rem;
+    }
+    .activity-card h3{margin:8px 0 6px}
+
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+    .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+    .kpi-value{font-size:1.6rem;font-weight:700; line-height: 1.2;}
+    .kpi-value strong { font-weight: 700; color: var(--accent); }
+    .kpi-label{color:var(--sub)}
+
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .ages{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+    .ages li{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;display:flex;justify-content:space-between}
+
+    .footer{
+      display:flex;gap:8px;justify-content:center;align-items:center;
+      color:var(--sub);padding:24px;border-top:1px solid var(--border);margin-top:32px;
+      flex-direction: column;
+    }
+    .sep{opacity:.6}
+    .demo-banner{
+      position:relative;z-index:1;max-width:960px;margin:0 auto 8px;padding:8px 14px;
+      text-align:center;font-size:.9rem;color:var(--sub);
+      background:var(--panel);border:1px solid var(--border);border-radius:999px;
+    }
+    .demo-hint{color:var(--sub);font-size:.9rem;margin:0 0 12px}
+    
+    .verse-container {
+      text-align: center;
+      padding: 20px;
+      background: var(--panel);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin: 20px 0;
+    }
+    
+    .verse {
+      font-style: italic;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    
+    .verse-reference {
+      font-weight: bold;
+      color: var(--accent);
+    }
+    
+    .verse-description {
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    @media (max-width:900px){
+      .form-row{grid-template-columns:1fr 1fr}
+      .kpis{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:560px){
+      .form-row{grid-template-columns:1fr}
+      .nav{padding-bottom:10px}
+    }
+
+    /* Estilos para os modais */
+    .modal-content h3 { margin: 0 0 16px; }
+    
+    /* Estilo para o campo de data/hora não interativo */
+    .datetime-display {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      pointer-events: none;
+      user-select: none;
+      cursor: default;
+      opacity: 0.8;
+    }
+    
+    .developer-link {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    .developer-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <img src="img/logo-demo.png" alt="Logo Evangelismo Solidário DEMO" style="width:100%;height:100%;object-fit:contain;">
+      </div>
+      <div class="brand-text">
+        <h1>Evangelismo Solidário - Igreja Demo</h1>
+        <p class="subtitle">Evangelismo Solidário - Igreja Demo</p>
+        <!-- Campo livre para informações adicionais -->
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-link active" data-target="inicio">Início</button>
+      <button class="nav-link" data-target="cadastros">Cadastros</button>
+      <button class="nav-link" data-target="atividades">Atividades</button>
+      <button class="nav-link" data-target="resumo">Resumo</button>
+      <button class="nav-link" data-target="administracao">Administração</button>
+    </nav>
+  </header>
+
+  <!-- Logo do topo -->
+  <div style="text-align:center; padding:15px 0;">
+    <img src="img/logo-demo.png" alt="Logo Evangelismo Solidário" style="max-width:200px; height:auto;">
+  </div>
+
+  <div class="demo-banner">Versão demonstrativa · os dados digitados ficam salvos apenas neste navegador</div>
+
+  <main>
+    <!-- Início -->
+    <section id="inicio" class="view active">
+      <div class="hero">
+        <div class="hero-badge">Evangelismo solidário</div>
+        <h2 class="hero-title">Evangelismo Solidário - Igreja Demo</h2>
+        <p class="hero-when">Ação de amor e solidariedade à comunidade</p>
+        <div class="hero-cta">
+          <a class="btn primary" data-target="cadastros" href="#cadastros">Fazer cadastro</a>
+          <a class="btn outline" data-target="atividades" href="#atividades">Confirmar Atividade</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cadastros -->
+    <section id="cadastros" class="view">
+      <h2>Cadastros</h2>
+      <form id="cadastroForm" class="form">
+        <input type="hidden" id="cad-id" />
+        <div class="form-row">
+          <div class="form-field">
+            <label for="cad-nome">Nome</label>
+            <input id="cad-nome" type="text" placeholder="Nome completo" required />
+          </div>
+          <div class="form-field">
+            <label for="cad-idade">Idade</label>
+            <input id="cad-idade" type="number" min="0" max="120" placeholder="Idade" required />
+          </div>
+          <div class="form-field">
+            <label for="cad-telefone">Telefone</label>
+            <input id="cad-telefone" type="tel" placeholder="(XX) XXXXX-XXXX" required />
+          </div>
+          <div class="form-field">
+            <label for="cad-datetime">Data - Hora</label>
+            <div id="cad-datetime" class="datetime-display"></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="btnSalvar" >Salvar</button>
+          <button type="reset" class="btn" id="btnLimpar">Limpar</button>
+        </div>
+        <div class="form-error" id="formError">Preencha todos os campos.</div>
+      </form>
+    </section>
+
+    <!-- Atividades -->
+    <section id="atividades" class="view">
+      <h2>Atividades</h2>
+      <div class="grid">
+        <div class="activity-card" data-atividade="Atendimento Odontológico">
+          <span class="tag">Saúde</span>
+          <h3>Atendimento Odontológico</h3>
+          <p>Orientações e cuidados com a saúde bucal.</p>
+        </div>
+        <div class="activity-card" data-atividade="Aferição de Pressão e Glicose">
+          <span class="tag">Saúde</span>
+          <h3>Aferição de Pressão e Glicose</h3>
+          <p>Verificação de pressão arterial e nível de glicose.</p>
+        </div>
+        <div class="activity-card" data-atividade="Aconselhamento Psicológico">
+          <span class="tag">Saúde Mental</span>
+          <h3>Aconselhamento Psicológico</h3>
+          <p>Suporte emocional e orientação psicológica.</p>
+        </div>
+        <div class="activity-card" data-atividade="Doação de Roupas">
+          <span class="tag">Solidariedade</span>
+          <h3>Doação de Roupas</h3>
+          <p>Distribuição de roupas para pessoas necessitadas.</p>
+        </div>
+        <div class="activity-card" data-atividade="Corte de Cabelo Masculino">
+          <span class="tag">Beleza</span>
+          <h3>Corte de Cabelo Masculino</h3>
+          <p>Corte de cabelo gratuito para homens.</p>
+        </div>
+        <div class="activity-card" data-atividade="Atendimento Estético Feminino">
+          <span class="tag">Beleza</span>
+          <h3>Atendimento Estético Feminino</h3>
+          <p>Cuidados estéticos e de beleza para mulheres.</p>
+        </div>
+        <div class="activity-card" data-atividade="Atendimento Jurídico">
+          <span class="tag">Assessoria</span>
+          <h3>Atendimento Jurídico</h3>
+          <p>Orientações jurídicas e encaminhamentos.</p>
+        </div>
+        <div class="activity-card" data-atividade="Culto Infantil">
+          <span class="tag">Espiritual</span>
+          <h3>Culto Infantil</h3>
+          <p>Atividades espirituais e recreativas para crianças.</p>
+        </div>
+        <div class="activity-card" data-atividade="Agendamento Documentos">
+          <span class="tag">Documentação</span>
+          <h3>Agendamento para 2ª via de documentos</h3>
+          <p>Orientação para obtenção de 2ª via de documentos pessoais.</p>
+        </div>
+        <div class="activity-card" data-atividade="Agendamento Faturas">
+          <span class="tag">Utilidades</span>
+          <h3>Agendamento para 2ª via de faturas</h3>
+          <p>Orientação para 2ª via de faturas de água e luz.</p>
+        </div>
+        <div class="activity-card" data-atividade="Xerox de Documentos">
+          <span class="tag">Serviços</span>
+          <h3>Xerox de Documentos</h3>
+          <p>Cópias de documentos de forma gratuita.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resumo -->
+    <section id="resumo" class="view">
+      <h2>Resumo</h2>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi-value" id="kpiTotal">0</div>
+          <div class="kpi-label">Total de cadastros</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-value" id="kpiTotalConfirmacoes">0</div>
+          <div class="kpi-label">Total de confirmações</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-value" id="kpiMaisFrequentes">S/ dados</div>
+          <div class="kpi-label">Atividade mais procurada</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-value" id="kpiMenosFrequentes">S/ dados</div>
+          <div class="kpi-label">Atividade menos procurada</div>
+        </div>
+      </div>
+
+      <div class="verse-container">
+        <div class="verse">"Porque tive fome e vocês me deram de comer, tive sede e me deram de beber; fui estrangeiro e me acolheram."</div>
+        <div class="verse-reference">— Mateus 25:35</div>
+        <div class="verse-description">
+          Inspirados pelo ensinamento de Jesus, estamos realizando uma ação solidária para cuidar da nossa comunidade.
+          Serão oferecidos serviços gratuitos, como corte de cabelo e atendimentos diversos, para que cada pessoa seja recebida com dignidade, respeito e amor.
+          Mais do que ajudar, queremos ser instrumentos de esperança, mostrando na prática o mandamento de amar ao próximo como a nós mesmos.
+        </div>
+      </div>
+    </section>
+    
+    <!-- Administração -->
+    <section id="administracao" class="view">
+      <h2>Administração</h2>
+      <div class="admin-grid">
+        <a class="card-link" data-target="resumo" href="#resumo">
+          <div class="card">
+            <h3>Resumo</h3>
+            <p>Indicadores gerais do evento.</p>
+          </div>
+        </a>
+        <a class="card-link" data-target="atividades" href="#atividades">
+          <div class="card">
+            <h3>Atividades</h3>
+            <p>Lista de serviços oferecidos.</p>
+          </div>
+        </a>
+        <a class="card-link" data-target="cadastros" href="#cadastros">
+          <div class="card">
+            <h3>Cadastros</h3>
+            <p>Gerencie inscritos e contatos.</p>
+          </div>
+        </a>
+        <a class="card-link" href="https://www.tscbr.com.br/" target="_blank" rel="noopener noreferrer">
+          <div class="card">
+            <h3>TSC Br</h3>
+            <p>Desenvolvido por Estevão Miguel · TSCBr</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">
+          <input id="busca" type="search" placeholder="Buscar por nome ou telefone..." />
+        </div>
+        <div class="toolbar-actions">
+          <button class="btn outline" id="btnExportar">Exportar CSV</button>
+          <button class="btn danger" id="btnLimparTudo" title="Remover todos os cadastros">Limpar tudo</button>
+          <select id="adminSelector" class="hidden" aria-label="Selecionar administrador"></select>
+          <button class="btn hidden" id="btnLogout" title="Sair da Administração">Logout</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="tabelaCadastros">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Idade</th>
+              <th>Telefone</th>
+              <th>Atividade Confirmada</th>
+              <th>Data - Hora</th>
+            </tr>
+          </thead>
+          <tbody><!-- preenchido via JS --></tbody>
+        </table>
+        <p class="hint">Dica: clique em "Editar" para ajustar um cadastro existente.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de confirmação de cadastro -->
+  <div id="modalConfirm" class="modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <h3>Cadastro confirmado</h3>
+      <p id="modalMessage">Usuário: <strong id="modalNome"></strong><br>ID: <strong id="modalId"></strong></p>
+      <div class="modal-actions">
+        <button class="btn" id="modalClose">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de login para Administração -->
+  <div id="modalLogin" class="modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <h3>Login Administração</h3>
+      <p class="demo-hint">Versão demonstrativa: usuário <strong>demo</strong> e senha <strong>demo</strong>.</p>
+      <div class="form-field">
+        <label for="loginUser">Usuário</label>
+        <input id="loginUser" type="text" placeholder="Usuário" />
+      </div>
+      <div class="form-field">
+        <label for="loginPass">Senha</label>
+        <input id="loginPass" type="password" placeholder="Senha" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="loginCancel">Cancelar</button>
+        <button class="btn primary" id="loginSubmit">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para seleção de ID para confirmar presença -->
+  <div id="modalSelecaoId" class="modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <h3>Confirmar presença em: <span id="modalAtividadeTitulo"></span></h3>
+      <div class="form-field">
+        <label for="presencaIdInput">Informe seu ID</label>
+        <input id="presencaIdInput" type="text" placeholder="Ex: A0101" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn" data-dismiss="modal">Cancelar</button>
+        <button class="btn primary" id="btnConfirmarPresenca">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmação de presença -->
+  <div id="modalPresencaConfirmada" class="modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <h3>Presença confirmada!</h3>
+      <p>
+        <strong id="modalPresencaNome"></strong><br>
+        ID: <strong id="modalPresencaId"></strong><br>
+        Atividade: <strong id="modalPresencaAtividade"></strong>
+      </p>
+      <div class="modal-actions">
+        <button class="btn" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>Igreja Demo • Evangelismo Solidário</span>
+    <span>Desenvolvido por <a href="https://github.com/dev-estevao-miguel" target="_blank" rel="noopener noreferrer" class="developer-link">Estevão Miguel</a> · <a href="https://www.tscbr.com.br/" target="_blank" rel="noopener noreferrer" class="developer-link">TSCBr</a></span>
+    <span>Versão demonstrativa para portfólio &copy; 2025</span>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>
